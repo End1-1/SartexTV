@@ -1,0 +1,657 @@
+import 'dart:convert';
+
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:sartex_tv/screen/tv/tv_model.dart';
+import 'package:sartex_tv/utils/consts.dart';
+import 'package:sartex_tv/utils/prefs.dart';
+import 'package:sartex_tv/utils/translator.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+
+class TVScreen extends StatelessWidget {
+  final WebViewController controller =
+  WebViewController.fromPlatformCreationParams(
+      const PlatformWebViewControllerCreationParams());
+
+  final bool pcVersion;
+
+  TVScreen(this.pcVersion, {super.key}) {
+    _textHeader1 = TextStyle(
+      color: Colors.white,
+      height: 1.52,
+      fontSize: pcVersion ? 20 : 28,
+      fontFamily: 'Agency FB',
+    );
+  }
+
+  var page = true;
+  final List<ModelRow> modelRows = [];
+
+  final dw = <double>[
+    100,
+    200,
+    200,
+    100,
+    100,
+    100,
+    100,
+    100,
+    100,
+    100,
+    100,
+    100,
+    100,
+    110
+  ];
+  List<double> cw = [];
+  final _model = TVModel();
+  final double rowHeight = 50;
+  final double headerHeight = 50;
+  static const _color0 = Color(0xFF0035FF);
+  static const _color1 = Color(0xff6bc26a);
+  static const _color2 = Color(0xff565656);
+  final _standartPadding = const EdgeInsets.all(5);
+  late final TextStyle _textHeader1;
+
+  final _textHeader2 = const TextStyle(
+      color: Colors.black87,
+      fontSize: 22,
+      height: 1.5,
+      fontFamily: 'Agency FB');
+  final _textHeader3 = const TextStyle(
+      color: Colors.white,
+      fontSize: 24,
+      height: 1.5,
+      fontFamily: 'Agency FB',
+      fontWeight: FontWeight.bold);
+  final _textTableHeader = const TextStyle(
+      color: Colors.black87,
+      fontSize: 26,
+      height: 1.5,
+      fontFamily: 'Agency FB');
+  final _textLine = const TextStyle(
+      color: Colors.black87,
+      fontSize: 30,
+      height: 1.5,
+      fontFamily: 'Agency FB',
+      fontWeight: FontWeight.bold);
+  final _textTotal = const TextStyle(
+      color: Colors.black87,
+      fontSize: 26,
+      fontWeight: FontWeight.w900,
+      height: 1.5,
+      fontFamily: 'Agency FB');
+  final _textPlan = const TextStyle(
+      color: Colors.red,
+      fontSize: 30,
+      fontWeight: FontWeight.w900,
+      height: 1.5,
+      fontFamily: 'Agency FB');
+
+  final _t1 = const BoxDecoration(
+      color: _color0,
+      border: Border.fromBorderSide(BorderSide(color: Color(0XFF0035FF))));
+  final _t2 = const BoxDecoration(
+      color: _color1,
+      border: Border.fromBorderSide(BorderSide(color: Colors.black12)));
+  final _t3 = const BoxDecoration(
+      color: _color1,
+      gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Colors.white, Color(0xFF00FF3D)]),
+      border: Border.fromBorderSide(BorderSide(color: Colors.black12)));
+  final _t4 = const BoxDecoration(
+      color: _color2,
+      border: Border.fromBorderSide(BorderSide(color: Colors.black12)));
+
+  final _t5 = const BoxDecoration(
+      color: Colors.white,
+      border: Border.fromBorderSide(BorderSide(color: Colors.black12)));
+  final _t6 = const BoxDecoration(
+      gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Colors.white, Color(0xFF97FFFA)]),
+      border: Border.fromBorderSide(BorderSide(color: Colors.black12)));
+
+  final _t7 = const BoxDecoration(
+      gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Colors.white, Color(0xFF4BC7FD)]),
+      border: Border.fromBorderSide(BorderSide(color: Colors.black12)));
+
+  final _t8 = const BoxDecoration(
+      gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Colors.white,
+            Color(0xFF036C14),
+            Color(0xFF006510),
+            Color(0xFF006510)
+          ]),
+      border: Border.fromBorderSide(BorderSide(color: Colors.black12)));
+
+  final _t9 = const BoxDecoration(
+      gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Colors.white,
+            Color(0xFFFF2C8B),
+            Color(0xFFFF2C8B),
+            Color(0xFFFF2C8B),
+            Color(0xFFFF2C8B)
+          ]),
+      border: Border.fromBorderSide(BorderSide(color: Colors.black12)));
+
+  final _scrollController = ScrollController();
+  bool scroll = false;
+  int speedFactor = 20;
+
+  _scroll() {
+    double maxExtent = _scrollController.position.maxScrollExtent;
+    double distanceDifference = maxExtent - _scrollController.offset;
+    double durationDouble = distanceDifference / speedFactor;
+
+    _scrollController.animateTo(_scrollController.position.maxScrollExtent,
+        duration: Duration(seconds: durationDouble.toInt()),
+        curve: Curves.linear);
+  }
+
+  _toggleScrolling() {
+    if (scroll) {
+      _scroll();
+    } else {
+      _scrollController.animateTo(_scrollController.offset,
+          duration: const Duration(seconds: 1), curve: Curves.linear);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    cw.clear();
+    cw.addAll(dw);
+    double t = 0;
+    for (var e in cw) {
+      t += e;
+    }
+    t = (MediaQuery.of(context).size.width - t) / cw.length;
+    t -= 2;
+    for (int i = 0; i < cw.length; i++) {
+      cw[i] = cw[i] + t;
+    }
+    return Scaffold(
+        body: SafeArea(
+            child: StreamBuilder<String?>(
+                stream: _model.viewController.stream,
+                builder: (context, snapshot) {
+                  if (snapshot.data != null) {
+                    return _message(context, snapshot.data!);
+                  }
+                  return Focus(
+                      onKey: (node, event) {
+                        print(event.logicalKey);
+                        return KeyEventResult.handled;
+                      },
+                      child: StreamBuilder<List<ModelRow>>(
+                          stream: _model.streamController.stream,
+                          builder: (context, snapshot) {
+                            return SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: SizedBox(
+                                    width: 1000,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                      MainAxisAlignment.start,
+                                      children: [
+                                        _header(),
+                                        _tableHeader(),
+                                        Expanded(
+                                            child: SingleChildScrollView(
+                                                child: Column(children: [
+                                                  for (var e in snapshot.data ??
+                                                      []) ...[_tableRow(e)]
+                                                ]))),
+                                        //SingleChildScrollView(child: Column(children: [ for (var e in snapshot.data ?? [])...[_tableRow(e)]]))),
+                                        _totalRow()
+                                      ],
+                                    )));
+                          }));
+                })));
+  }
+
+  Widget _message(BuildContext context, String msg) {
+    String str = msg;
+    try {
+      Map<String, dynamic> d = jsonDecode(msg);
+      str = d["1"];
+    } catch (e) {
+
+    }
+    controller.loadHtmlString(str);
+    Widget w = Column(
+      children: [
+        Expanded(
+          child: WebViewWidget(controller: controller),
+        )
+      ],
+    );
+    return w;
+  }
+
+  Widget _header() {
+    return Row(
+      children: [
+        for (int i = 0; i < 4; i++) ...[
+          OutlinedButton(
+              autofocus: true,
+              onPressed: () {
+                _model.setPageNumber(i);
+              },
+              child: Text(i == 0 ? L.tr('All') : (i).toString()))
+        ],
+        const SizedBox(width: 10),
+        Text(L.tr('Line count')),
+        OutlinedButton(
+            autofocus: true,
+            onPressed: () {
+              prefs.setInt(key_tv_page_count, 8);
+              _model.setPageNumber(1);
+            },
+            child: const Text('8')),
+        OutlinedButton(
+            autofocus: true,
+            onPressed: () {
+              prefs.setInt(key_tv_page_count, 12);
+              _model.setPageNumber(1);
+            },
+            child: Text('12')),
+        Container(width: 10),
+        OutlinedButton(
+            autofocus: true,
+            onPressed: () {
+              //document.documentElement?.requestFullscreen();
+            },
+            child: const Text('Fullscreen')),
+        Expanded(
+            child: Container(
+                height: 50,
+                padding: _standartPadding,
+                decoration: const BoxDecoration(color: Color(0xffffffff)),
+                child: Text(DateFormat('dd/MM/yyyy').format(DateTime.now()),
+                    textAlign: TextAlign.center, style: _textHeader2))),
+        //Expanded(child: Container()),
+        Container(
+            height: 50,
+            width: cw[11] + cw[12] + cw[13],
+            padding: _standartPadding,
+            decoration: const BoxDecoration(color: Color(0xffffffff)),
+            child: Text(DateFormat('MMMM').format(DateTime.now()),
+                textAlign: TextAlign.center, style: _textHeader2)),
+      ],
+    );
+  }
+
+  Widget _tableHeader() {
+    int i = 0;
+    return Row(
+      children: [
+        //line
+        Container(
+            height: headerHeight,
+            width: cw[i++],
+            padding: _standartPadding,
+            decoration: _t1,
+            alignment: Alignment.center,
+            child: Text("Line", style: _textHeader1)),
+        //brand
+        Container(
+            height: headerHeight,
+            width: cw[i++],
+            padding: _standartPadding,
+            decoration: _t1,
+            alignment: Alignment.center,
+            child: Text("Brand", style: _textHeader1)),
+        //model
+        Container(
+            height: headerHeight,
+            width: cw[i++],
+            padding: _standartPadding,
+            decoration: _t1,
+            alignment: Alignment.center,
+            child: Text("Model", style: _textHeader1)),
+        //10.30
+        Container(
+            height: headerHeight,
+            width: cw[i++],
+            padding: _standartPadding,
+            decoration: _t1,
+            alignment: Alignment.center,
+            child: Text(L.tr("10:30"), style: _textHeader1)),
+        //12.30
+        Container(
+            height: headerHeight,
+            width: cw[i++],
+            padding: _standartPadding,
+            decoration: _t1,
+            alignment: Alignment.center,
+            child: Text(L.tr("12:30"), style: _textHeader1)),
+        //15.30
+        Container(
+            height: headerHeight,
+            width: cw[i++],
+            padding: _standartPadding,
+            decoration: _t1,
+            alignment: Alignment.center,
+            child: Text(L.tr("15:30"), style: _textHeader1)),
+        //17.30
+        Container(
+            height: headerHeight,
+            width: cw[i++],
+            padding: _standartPadding,
+            decoration: _t1,
+            alignment: Alignment.center,
+            child: Text(L.tr("17:30"), style: _textHeader1)),
+        //Ext.
+        Container(
+            height: headerHeight,
+            width: cw[i++],
+            padding: _standartPadding,
+            decoration: _t1,
+            alignment: Alignment.center,
+            child: Text(L.tr("Ext"), style: _textHeader1)),
+        //total
+        Container(
+            height: headerHeight,
+            width: cw[i++],
+            padding: _standartPadding,
+            decoration: _t1,
+            alignment: Alignment.center,
+            child: Text("Total", style: _textHeader1)),
+        //PAST
+        Container(
+            height: headerHeight,
+            width: cw[i++],
+            padding: _standartPadding,
+            decoration: _t1,
+            alignment: Alignment.center,
+            child: Text(L.tr("Past"), style: _textHeader1)),
+        //plan
+        Container(
+            height: headerHeight,
+            width: cw[i++],
+            padding: _standartPadding,
+            decoration: _t2,
+            alignment: Alignment.center,
+            child: Text("Plan", style: _textHeader1)),
+        //Expanded(child: Container()),
+        //Prod
+        Container(
+            height: headerHeight,
+            width: cw[i++],
+            padding: _standartPadding,
+            decoration: _t3,
+            alignment: Alignment.center,
+            child: Text(prefs.branch() == 'Sartex' ? L.tr('PROD.') : L.tr("MAG"), style: _textHeader2)),
+        //Stock
+        Container(
+            height: headerHeight,
+            width: cw[i++],
+            padding: _standartPadding,
+            decoration: _t3,
+            alignment: Alignment.center,
+            child: Text(L.tr("Stock"), style: _textHeader2)),
+        //Pref
+        Container(
+            height: headerHeight,
+            width: cw[i++],
+            padding: _standartPadding,
+            decoration: _t4,
+            alignment: Alignment.center,
+            child: Text(
+                prefs.branch() == 'Sartex'
+                    ? L.tr("Perf(%)")
+                    : L.tr("LINEA\r\n17:30"),
+                style: _textHeader2)),
+      ],
+    );
+  }
+
+  Widget _tableRow(ModelRow r) {
+    int i = 0;
+    return Row(
+      children: [
+        //line
+        Container(
+            width: cw[i++],
+            height: rowHeight,
+            padding: _standartPadding,
+            decoration: _t5,
+            alignment: Alignment.center,
+            child: Text(r.line!, style: _textLine)),
+        //brand
+        Container(
+            width: cw[i++],
+            height: rowHeight,
+            padding: _standartPadding,
+            decoration: _t5,
+            alignment: Alignment.center,
+            child: Text(r.brand!, style: _textTableHeader)),
+        //model
+        Container(
+            width: cw[i++],
+            height: rowHeight,
+            padding: _standartPadding,
+            decoration: _t5,
+            alignment: Alignment.center,
+            child: Text(r.Model!, style: _textTableHeader)),
+        //10.30
+        Container(
+            width: cw[i++],
+            height: rowHeight,
+            padding: _standartPadding,
+            decoration: _t6,
+            alignment: Alignment.center,
+            child: Text(r.t1030!, style: _textTableHeader)),
+        //12.30
+        Container(
+            width: cw[i++],
+            height: rowHeight,
+            padding: _standartPadding,
+            decoration: _t6,
+            alignment: Alignment.center,
+            child: Text(r.t1230!, style: _textTableHeader)),
+        //15.30
+        Container(
+            width: cw[i++],
+            height: rowHeight,
+            padding: _standartPadding,
+            decoration: _t6,
+            alignment: Alignment.center,
+            child: Text(r.t1530!, style: _textTableHeader)),
+        //17.30
+        Container(
+            width: cw[i++],
+            height: rowHeight,
+            padding: _standartPadding,
+            decoration: _t6,
+            alignment: Alignment.center,
+            child: Text(r.t1730!, style: _textTableHeader)),
+        //Ext.
+        Container(
+            width: cw[i++],
+            height: rowHeight,
+            padding: _standartPadding,
+            decoration: _t6,
+            alignment: Alignment.center,
+            child: Text(r.Ext!, style: _textTableHeader)),
+        //total
+        Container(
+            width: cw[i++],
+            height: rowHeight,
+            padding: _standartPadding,
+            decoration: _t7,
+            alignment: Alignment.center,
+            child: Text(r.Total!, style: _textTotal)),
+        //PAST
+        Container(
+            width: cw[i++],
+            height: rowHeight,
+            padding: _standartPadding,
+            decoration: _t5,
+            alignment: Alignment.center,
+            child: Text(r.Past!, style: _textTableHeader)),
+        //plan
+        Container(
+            width: cw[i++],
+            height: rowHeight,
+            padding: _standartPadding,
+            decoration: _t8,
+            alignment: Alignment.center,
+            child: Text(r.Plan!, style: _textPlan)),
+        //Expanded(child: Container()),
+        //PAST
+        Container(
+            width: cw[i++],
+            height: rowHeight,
+            padding: _standartPadding,
+            decoration: _t3,
+            alignment: Alignment.center,
+            child: Text(r.Prod!, style: _textTableHeader)),
+        //plan
+        Container(
+            width: cw[i++],
+            height: rowHeight,
+            padding: _standartPadding,
+            decoration: _t3,
+            alignment: Alignment.center,
+            child: Text(r.Magaz!, style: _textTableHeader)),
+        //perf
+        Container(
+            width: cw[i++],
+            height: rowHeight,
+            padding: _standartPadding,
+            decoration: _t9,
+            alignment: Alignment.center,
+            child: Text(prefs.branch() == 'Sartex' ? r.Pref! : r.cnt!,
+                style: _textTableHeader)),
+      ],
+    );
+  }
+
+  Widget _totalRow() {
+    int i = 3;
+    return Row(
+      children: [
+        //line
+        Container(
+            height: headerHeight,
+            width:  cw[0] + cw[1] + cw[2],
+            padding: _standartPadding,
+            decoration: _t4,
+            alignment: Alignment.center,
+            child: Text(L.tr("Grand total"), style: _textHeader3)),
+
+        //10.30
+        Container(
+            height: headerHeight,
+            width: cw[i++],
+            padding: _standartPadding,
+            decoration: _t4,
+            alignment: Alignment.center,
+            child: Text(_model.totalRow.t1030!, style: _textHeader3)),
+        //12.30
+        Container(
+            height: headerHeight,
+            width: cw[i++],
+            padding: _standartPadding,
+            decoration: _t4,
+            alignment: Alignment.center,
+            child: Text(_model.totalRow.t1230!, style: _textHeader3)),
+        //15.30
+        Container(
+            height: headerHeight,
+            width: cw[i++],
+            padding: _standartPadding,
+            decoration: _t4,
+            alignment: Alignment.center,
+            child: Text(_model.totalRow.t1530!, style: _textHeader3)),
+        //17.30
+        Container(
+            height: headerHeight,
+            width: cw[i++],
+            padding: _standartPadding,
+            decoration: _t4,
+            alignment: Alignment.center,
+            child: Text(_model.totalRow.t1730!, style: _textHeader3)),
+        //Ext.
+        Container(
+            height: headerHeight,
+            width: cw[i++],
+            padding: _standartPadding,
+            decoration: _t4,
+            alignment: Alignment.center,
+            child: Text(_model.totalRow.Ext!, style: _textHeader3)),
+        //total
+        Container(
+            height: headerHeight,
+            width: cw[i++],
+            padding: _standartPadding,
+            decoration: _t4,
+            alignment: Alignment.center,
+            child: Text(_model.totalRow.Total!, style: _textHeader3)),
+        //PAST
+        Container(
+            height: headerHeight,
+            width: cw[i++],
+            padding: _standartPadding,
+            decoration: _t4,
+            alignment: Alignment.center,
+            child: Text(_model.totalRow.Past!, style: _textHeader3)),
+        //plan
+        Container(
+            height: headerHeight,
+            width: cw[i++],
+            padding: _standartPadding,
+            decoration: _t4,
+            alignment: Alignment.center,
+            child: Text(_model.totalRow.Plan!, style: _textHeader3)),
+        //Expanded(child: Container()),
+        //PAST
+        Container(
+            height: headerHeight,
+            width: cw[i++],
+            padding: _standartPadding,
+            decoration: _t4,
+            alignment: Alignment.center,
+            child: Text(_model.totalRow.Prod!, style: _textHeader3)),
+        //plan
+        Container(
+            height: headerHeight,
+            width: cw[i++],
+            padding: _standartPadding,
+            decoration: _t4,
+            alignment: Alignment.center,
+            child: Text(_model.totalRow.Magaz!, style: _textHeader3)),
+        //perf
+        Container(
+            height: headerHeight,
+            width: cw[i++],
+            padding: _standartPadding,
+            decoration: _t4,
+            alignment: Alignment.center,
+            child: Text(
+                prefs.branch() == 'Sartex'
+                    ? _model.totalRow.Pref!
+                    : _model.totalRow.cnt!,
+                style: _textHeader3)),
+      ],
+    );
+  }
+}

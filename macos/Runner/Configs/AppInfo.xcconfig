@@ -1,0 +1,24 @@
+// Application-level settings for the Runner target.
+//
+// This may be replaced with something auto-generated from metadata (e.g., pubspec.yaml) in the
+// future. If not, the values below would default to using the project name when this becomes a
+// 'flutter create' template.
+
+// The application's name. By default this is also the title of the Flutter window.
+<<<<<<< HEAD
+PRODUCT_NAME = sartex_tv
+
+// The application's bundle identifier
+PRODUCT_BUNDLE_IDENTIFIER = com.example.sartexTv
+
+// The copyright displayed in application information
+PRODUCT_COPYRIGHT = Copyright © 2025 com.example. All rights reserved.
+=======
+PRODUCT_NAME = sartex
+
+// The application's bundle identifier
+PRODUCT_BUNDLE_IDENTIFIER = com.example.sartex
+
+// The copyright displayed in application information
+PRODUCT_COPYRIGHT = Copyright © 2024 com.example. All rights reserved.
+>>>>>>> 4b2f057c1676cf81af02309e6a9ce5d4d14b0ec1

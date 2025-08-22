@@ -1,0 +1,22 @@
+//
+//  Generated file. Do not edit.
+//
+
+import FlutterMacOS
+import Foundation
+
+<<<<<<< HEAD
+import package_info_plus_macos
+=======
+>>>>>>> 4b2f057c1676cf81af02309e6a9ce5d4d14b0ec1
+import shared_preferences_foundation
+import webview_flutter_wkwebview
+
+func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
+<<<<<<< HEAD
+  FLTPackageInfoPlusPlugin.register(with: registry.registrar(forPlugin: "FLTPackageInfoPlusPlugin"))
+=======
+>>>>>>> 4b2f057c1676cf81af02309e6a9ce5d4d14b0ec1
+  SharedPreferencesPlugin.register(with: registry.registrar(forPlugin: "SharedPreferencesPlugin"))
+  WebViewFlutterPlugin.register(with: registry.registrar(forPlugin: "WebViewFlutterPlugin"))
+}
