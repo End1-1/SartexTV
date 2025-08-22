@@ -193,10 +193,7 @@ class TVScreen extends StatelessWidget {
                     return _message(context, snapshot.data!);
                   }
                   return Focus(
-                      onKey: (node, event) {
-                        print(event.logicalKey);
-                        return KeyEventResult.handled;
-                      },
+
                       child: StreamBuilder<List<ModelRow>>(
                           stream: _model.streamController.stream,
                           builder: (context, snapshot) {

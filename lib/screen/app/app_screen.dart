@@ -4,8 +4,6 @@ import 'package:sartex_tv/screen/app/app_left_menu.dart';
 import 'package:sartex_tv/utils/consts.dart';
 import 'package:sartex_tv/utils/prefs.dart';
 import 'package:sartex_tv/utils/translator.dart';
-import 'package:sartex_tv/widgets/svg_button.dart';
-
 import 'app_model.dart';
 
 abstract class App extends StatelessWidget {
