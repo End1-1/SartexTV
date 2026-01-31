@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 
 import 'package:sartex_tv/screen/ste.dart';
+import 'package:sartex_tv/screen/tv/start_page.dart';
 import 'package:sartex_tv/screen/tv/tv_screen.dart';
 import 'package:sartex_tv/utils/consts.dart';
 import 'package:sartex_tv/utils/prefs.dart';
@@ -45,7 +46,7 @@ runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  MyApp({super.key});
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -60,11 +61,8 @@ class MyApp extends StatelessWidget {
               bodyMedium: TextStyle(fontSize: 12, color: Colors.black),
             )),
         debugShowCheckedModeBanner: false,
-        routes: {
-          "/": (context) => TVScreen(false),
-          route_tv: (context) =>  TVScreen(false)
+        home: const StartPage());
 
-        });
   }
 }
 

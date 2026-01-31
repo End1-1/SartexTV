@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:sartex_tv/screen/app/app_left_menu.dart';
 import 'package:sartex_tv/utils/consts.dart';
 import 'package:sartex_tv/utils/prefs.dart';
 import 'package:sartex_tv/utils/translator.dart';
@@ -15,7 +14,6 @@ abstract class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if ((prefs.getInt(key_user_id) ?? 0) == 0) {
-      print(ModalRoute.of(context)?.settings.name);
       if (ModalRoute.of(context)?.settings.name != '/') {
         Future.delayed(const Duration(milliseconds: 500), () {
           Navigator.pushReplacementNamed(context, '/');
@@ -74,7 +72,6 @@ abstract class App extends StatelessWidget {
                   margin: EdgeInsets.fromLTRB(60 * scale_factor, 0, 0, 0),
                   child: body(context))),
         ]),
-        LeftMenu(),
       ])),
     );
   }

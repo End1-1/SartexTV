@@ -28,6 +28,7 @@ class ModelRow with _$ModelRow {
         required String? Prod,
         required String? Magaz,
         required String? Pref,
+        required String? art_tokos,
         required String? cnt}) = _ModelRow;
 
   factory ModelRow.fromJson(Map<String, Object?> json) =>
@@ -57,6 +58,7 @@ class TVModel {
       Prod: '',
       Magaz: '',
       Pref: '',
+      art_tokos: '',
       cnt:''
   );
 
@@ -116,6 +118,7 @@ class TVModel {
           tpast = 0,
           tprod = 0,
           tmagaz = 0,
+          art_tokos=0,
           tcnt = 0;
       for (var e in l) {
         if (e['branch'] != 'Sartex') {
@@ -148,6 +151,7 @@ class TVModel {
             Prod: e['Prod'] ?? '',
             Magaz: e['Magaz'] ?? '',
             Pref: e['PERF(%)'] ?? '',
+            art_tokos: e['art_tokos'] ?? '',
             cnt: e['cnt'] ?? ''));
       }
       totalRow = ModelRow(
@@ -164,6 +168,7 @@ class TVModel {
           Plan: tplan.toString(),
           Prod: tprod.toString(),
           Magaz: tmagaz.toString(),
+          art_tokos: art_tokos.toString(),
           Pref: prefs.branch() == 'Sartex' ?  (tplan == 0 ? 0 : (tprod / (tplan) * 100)).truncate().toString() : tcnt.toString(),
           cnt: tcnt.toString());
 
